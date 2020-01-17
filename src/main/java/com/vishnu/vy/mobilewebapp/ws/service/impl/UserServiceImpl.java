@@ -15,6 +15,7 @@ import com.vishnu.vy.mobilewebapp.ws.io.repository.UserRepository;
 import com.vishnu.vy.mobilewebapp.ws.service.UserService;
 import com.vishnu.vy.mobilewebapp.ws.shared.Utils;
 import com.vishnu.vy.mobilewebapp.ws.shared.dto.UserDto;
+import com.vishnu.vy.mobilewebapp.ws.ui.model.response.ErrorMessages;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -65,7 +66,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDto getUser(String email) {
-		
+
 		final UserEntity userEntity = userRepository.findByEmail(email);
 		if (userEntity == null)
 			throw new UsernameNotFoundException(email);
@@ -76,15 +77,42 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public UserDto getUserByUserId(String userId) {
-		
+
 		final UserDto userDto = new UserDto();
-		final  UserEntity userEntity = userRepository.findByUserId(userId);
+		final UserEntity userEntity = userRepository.findByUserId(userId);
 		if (userEntity == null)
 			throw new UsernameNotFoundException(userId);
-		
+
 		BeanUtils.copyProperties(userEntity, userDto);
-		
+
 		return userDto;
+	}
+
+	@Override
+	public UserDto updateUser(String id, UserDto userDtoObj) {
+
+		final UserDto userDto = new UserDto();
+		final UserEntity userEntity = userRepository.findByUserId(id);
+		if (userEntity == null)
+			throw new UsernameNotFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+
+		userEntity.setFirstName(userDtoObj.getFirstName());
+		userEntity.setLastName(userDtoObj.getLastName());
+
+		final UserEntity updatedUserEntity = userRepository.save(userEntity);
+		BeanUtils.copyProperties(updatedUserEntity, userDto);
+
+		return userDto;
+	}
+
+	@Override
+	public void deleteUser(String id) {
+		final UserEntity userEntity = userRepository.findByUserId(id);
+		if (userEntity == null)
+			throw new UsernameNotFoundException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+
+		userRepository.delete(userEntity);
+
 	}
 
 }
