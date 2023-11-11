@@ -37,6 +37,8 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
 		chain.doFilter(req, res);
 	}
 
+
+
 	private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
 		
 		String token = request.getHeader(SecurityConstants.HEADER_STRING);
